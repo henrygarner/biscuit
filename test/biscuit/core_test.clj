@@ -2,7 +2,16 @@
   (:use clojure.test
         biscuit.core))
 
-
-(deftest crc8
+(deftest checksum
+  (testing "CRC-1 implementation"
+    (is (= (crc1 "biscuit") 243)))
+  (testing "CRC-8 1-Wire implementation"
+    (is (= (crc8-1wire "biscuit") 151)))
   (testing "CRC-8 implementation"
-    (is (= (checksum "payload") 91))))
+    (is (= (crc8 "biscuit") 133)))
+  (testing "CRC-16 implementation"
+    (is (= (crc16 "biscuit") 56686)))
+  (testing "CRC-24 implementation"
+    (is (= (crc24 "biscuit") 10922056)))
+  (testing "CRC-32 implementation"
+    (is (= (crc32 "biscuit") 2285031842))))
