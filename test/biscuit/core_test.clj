@@ -3,19 +3,21 @@
         biscuit.core))
 
 (deftest checksum
-  (testing "CRC-1 implementation"
-    (is (= (crc1 "biscuit") 243)))
-  (testing "CRC-5 implementation"
-    (is (= (crc5 "biscuit") 79)))
-  (testing "CRC-8 1-Wire implementation"
-    (is (= (crc8-1wire "biscuit") 151)))
-  (testing "CRC-8 implementation"
-    (is (= (crc8 "biscuit") 133)))
-  (testing "CRC-16 implementation"
-    (is (= (crc16 "biscuit") 56686)))
-  (testing "CRC-24 implementation"
-    (is (= (crc24 "biscuit") 10922056)))
-  (testing "CRC-32 implementation"
-    (is (= (crc32 "biscuit") 2285031842)))
-  (testing "CRC-32c implementation"
-    (is (= (crc32c "biscuit") 141543465))))
+  (is (= (crc1 "biscuit") 243))
+  (is (= (crc5 "biscuit") 79))
+  (is (= (crc8-1wire "biscuit") 151))
+  (is (= (crc8 "biscuit") 133))
+  (is (= (crc16 "biscuit") 56686))
+  (is (= (crc16-usb "biscuit") 8842))
+  (is (= (crc16-ccitt "biscuit") 47310))
+  (is (= (crc16-dnp "biscuit") 31858))
+  (is (= (crc16-modbus "biscuit") 56693))
+  (is (= (crc16-xmodem "biscuit") 18688))
+  (is (= (crc16-zmodem "biscuit") 18688))
+  (is (= (crc24 "biscuit") 10922056))
+  (is (= (crc32 "biscuit") 2285031842))
+  (is (= (crc32c "biscuit") 141543465))
+  (is (= (crc32-mpeg "biscuit") 2739206853))
+  (comment
+    "Bitwise and does not support clojure.lang.BigInt"
+    (is (= (crc64 "biscuit") 5158440339845310816))))

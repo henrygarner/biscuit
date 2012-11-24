@@ -73,6 +73,72 @@
                   0x00
                   message))
 
+(defn crc16-usb
+  "Calculates the CRC16 USB checksum"
+  [message]
+  (digest-message lookups/crc16
+                  identity
+                  #(bit-shift-right % 8)
+                  0x00ffff
+                  0xffff
+                  0xffff
+                  message))
+
+(defn crc16-ccitt
+  "Calculates the CRC16 CCITT checksum"
+  [message]
+  (digest-message lookups/crc16-ccitt
+                  #(bit-shift-right % 8)
+                  #(bit-shift-left % 8)
+                  0x00ffff
+                  0x00
+                  0xffff
+                  message))
+
+(defn crc16-dnp
+  "Calculates the CRC16 DNP checksum"
+  [message]
+  (digest-message lookups/crc16-dnp
+                  identity
+                  #(bit-shift-right % 8)
+                  0x00ffff
+                  0x00
+                  0x00
+                  message))
+
+(defn crc16-modbus
+  "Calculates the CRC16 Modbus checksum"
+  [message]
+  (digest-message lookups/crc16-modbus
+                  identity
+                  #(bit-shift-right % 8)
+                  0xffff
+                  0x00
+                  0xffff
+                  message))
+
+(defn crc16-xmodem
+  "Calculates the CRC16 XModem checksum"
+  [message]
+  (digest-message lookups/crc16-xmodem
+                  #(bit-shift-right % 8)
+                  #(bit-shift-left % 8)
+                  0xffff
+                  0x00
+                  0x00
+                  message))
+
+(defn crc16-zmodem
+  "Calculates the CRC16 ZModem checksum"
+  [message]
+  (digest-message lookups/crc16-zmodem
+                  #(bit-shift-right % 8)
+                  #(bit-shift-left % 8)
+                  0xffff
+                  0x00
+                  0x00
+                  message))
+
 (defn crc24
   "Calculates the CRC24 checksum"
   [message]
@@ -105,3 +171,27 @@
                   0xffffffff
                   0xffffffff
                   message))
+
+(defn crc32-mpeg
+  "Calculates the CRC32MPEG checksum"
+  [message]
+  (digest-message lookups/crc32-mpeg
+                  #(bit-shift-right % 24)
+                  #(bit-shift-left % 8)
+                  0xffffffff
+                  0x00
+                  0xffffffff
+                  message))
+
+(comment
+  "Bitwise and does not support clojure.lang.BigInt"
+  (defn crc64
+   "Calculates the CRC64 checksum"
+   [message]
+   (digest-message lookups/crc64
+                   identity
+                   #(bit-shift-right % 8)
+                   0xffffffffffffffff
+                   0x00
+                   0x00
+                   message)))
