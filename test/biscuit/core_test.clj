@@ -14,4 +14,6 @@
   (testing "CRC-24 implementation"
     (is (= (crc24 "biscuit") 10922056)))
   (testing "CRC-32 implementation"
-    (is (= (crc32 "biscuit") 2285031842))))
+    (is (= (crc32 "biscuit") 2285031842)))
+  (testing "CRC-32c implementation"
+    (is (= (crc32c "biscuit") 141543465))))

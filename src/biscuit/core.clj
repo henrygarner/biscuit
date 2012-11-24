@@ -83,3 +83,14 @@
                   0xffffffff
                   0xffffffff
                   message))
+
+(defn crc32c
+  "Calculates the CRC32c checksum"
+  [message]
+  (digest-message lookups/crc32c
+                  identity
+                  #(bit-shift-right % 8)
+                  0x00ffffff
+                  0xffffffff
+                  0xffffffff
+                  message))
