@@ -29,6 +29,17 @@
   (-> (reduce + (.getBytes message))
       (mod 256)))
 
+(defn crc5
+  "Calculates the CRC5 checksum"
+  [message]
+  (digest-message lookups/crc5
+                  #(bit-shift-right % 3)
+                  #(bit-shift-right % 8)
+                  (bit-shift-left 0x1f 3)
+                  0x1f
+                  0x1f
+                  message))
+
 (defn crc8-1wire
   "Calculates the Dallas 1-wire CRC8 checksum"
   [message]
@@ -58,7 +69,7 @@
                   identity
                   #(bit-shift-right % 8)
                   0x00ffff
-                  0x0
+                  0x00
                   0x00
                   message))
 

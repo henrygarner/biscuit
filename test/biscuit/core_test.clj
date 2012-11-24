@@ -5,6 +5,8 @@
 (deftest checksum
   (testing "CRC-1 implementation"
     (is (= (crc1 "biscuit") 243)))
+  (testing "CRC-5 implementation"
+    (is (= (crc5 "biscuit") 79)))
   (testing "CRC-8 1-Wire implementation"
     (is (= (crc8-1wire "biscuit") 151)))
   (testing "CRC-8 implementation"
