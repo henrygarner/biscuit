@@ -1,5 +1,5 @@
 (ns biscuit.core
-  (:require [biscuit.lookup-tables :as lookups]))
+  (:require [biscuit.tables :as lookup]))
 
 (defn- digest-byte
   "Returns an updated checksum given a previous checksum and a byte"
@@ -32,7 +32,7 @@
 (defn crc5
   "Calculates the CRC5 checksum"
   [message]
-  (digest-message lookups/crc5
+  (digest-message lookup/crc5
                   #(bit-shift-right % 3)
                   #(bit-shift-right % 8)
                   (bit-shift-left 0x1f 3)
@@ -43,7 +43,7 @@
 (defn crc8-1wire
   "Calculates the Dallas 1-wire CRC8 checksum"
   [message]
-  (digest-message lookups/crc8-1wire
+  (digest-message lookup/crc8-1wire
                   identity
                   #(bit-shift-left % 8)
                   0xff
@@ -54,7 +54,7 @@
 (defn crc8
   "Calculates the CRC8 checksum"
   [message]
-  (digest-message lookups/crc8
+  (digest-message lookup/crc8
                   identity
                   #(bit-shift-left % 8)
                   0xff
@@ -65,7 +65,7 @@
 (defn crc16
   "Calculates the CRC16 checksum"
   [message]
-  (digest-message lookups/crc16
+  (digest-message lookup/crc16
                   identity
                   #(bit-shift-right % 8)
                   0x00ffff
@@ -76,7 +76,7 @@
 (defn crc16-usb
   "Calculates the CRC16 USB checksum"
   [message]
-  (digest-message lookups/crc16
+  (digest-message lookup/crc16
                   identity
                   #(bit-shift-right % 8)
                   0x00ffff
@@ -87,7 +87,7 @@
 (defn crc16-ccitt
   "Calculates the CRC16 CCITT checksum"
   [message]
-  (digest-message lookups/crc16-ccitt
+  (digest-message lookup/crc16-ccitt
                   #(bit-shift-right % 8)
                   #(bit-shift-left % 8)
                   0x00ffff
@@ -98,7 +98,7 @@
 (defn crc16-dnp
   "Calculates the CRC16 DNP checksum"
   [message]
-  (digest-message lookups/crc16-dnp
+  (digest-message lookup/crc16-dnp
                   identity
                   #(bit-shift-right % 8)
                   0x00ffff
@@ -109,7 +109,7 @@
 (defn crc16-modbus
   "Calculates the CRC16 Modbus checksum"
   [message]
-  (digest-message lookups/crc16-modbus
+  (digest-message lookup/crc16-modbus
                   identity
                   #(bit-shift-right % 8)
                   0xffff
@@ -120,7 +120,7 @@
 (defn crc16-xmodem
   "Calculates the CRC16 XModem checksum"
   [message]
-  (digest-message lookups/crc16-xmodem
+  (digest-message lookup/crc16-xmodem
                   #(bit-shift-right % 8)
                   #(bit-shift-left % 8)
                   0xffff
@@ -131,7 +131,7 @@
 (defn crc16-zmodem
   "Calculates the CRC16 ZModem checksum"
   [message]
-  (digest-message lookups/crc16-zmodem
+  (digest-message lookup/crc16-zmodem
                   #(bit-shift-right % 8)
                   #(bit-shift-left % 8)
                   0xffff
@@ -142,7 +142,7 @@
 (defn crc24
   "Calculates the CRC24 checksum"
   [message]
-  (digest-message lookups/crc24
+  (digest-message lookup/crc24
                   #(bit-shift-right % 16)
                   #(bit-shift-left % 8)
                   0xffffff
@@ -153,7 +153,7 @@
 (defn crc32
   "Calculates the CRC32 checksum"
   [message]
-  (digest-message lookups/crc32
+  (digest-message lookup/crc32
                   identity
                   #(bit-shift-right % 8)
                   0x00ffffff
@@ -164,7 +164,7 @@
 (defn crc32c
   "Calculates the CRC32c checksum"
   [message]
-  (digest-message lookups/crc32c
+  (digest-message lookup/crc32c
                   identity
                   #(bit-shift-right % 8)
                   0x00ffffff
@@ -175,7 +175,7 @@
 (defn crc32-mpeg
   "Calculates the CRC32MPEG checksum"
   [message]
-  (digest-message lookups/crc32-mpeg
+  (digest-message lookup/crc32-mpeg
                   #(bit-shift-right % 24)
                   #(bit-shift-left % 8)
                   0xffffffff
@@ -188,7 +188,7 @@
   (defn crc64
    "Calculates the CRC64 checksum"
    [message]
-   (digest-message lookups/crc64
+   (digest-message lookup/crc64
                    identity
                    #(bit-shift-right % 8)
                    0xffffffffffffffff
