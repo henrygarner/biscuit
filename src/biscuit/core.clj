@@ -2,8 +2,8 @@
   (:require [biscuit.lookup-tables :as lookups]))
 
 (defn- digest-byte
-  "Returns a new checksum given a byte lookup, a bit shift operation, a mask, the previous checksum and the byte to digest"
-  [lookup-table lookup-shift xor-shift mask checksum byte]
+  "Returns an updated checksum given a previous checksum and a byte"
+  [lookup-table lookup-shift xor-shift and-mask checksum byte]
   (-> checksum
       lookup-shift
       (bit-xor byte)
@@ -11,17 +11,17 @@
       lookup-table
       (bit-xor (-> checksum
                    xor-shift
-                   (bit-and mask)))))
+                   (bit-and and-mask)))))
 
 (defn- digest-message
-  "Returns a message digest given a byte lookup, a bit shift operation, a bitwise and mask, a bitwise or mask, the initial checksum and a message to digest"
-  [lookup-table lookup-shift xor-shift and-mask or-mask checksum message]
+  "Digests the message bytes into a checksum"
+  [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
   (let [bytes (.getBytes message)]
     (bit-xor
      (reduce
       (partial digest-byte lookup-table lookup-shift xor-shift and-mask)
       checksum bytes)
-     or-mask)))
+     xor-mask)))
 
 (defn crc1
   "Calculates the CRC1 checksum"
