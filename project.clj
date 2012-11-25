@@ -1,7 +1,6 @@
-(defproject biscuit "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject biscuit "1.0.0"
+  :description "Calculate message digests"
+  :url "https://github.com/henrygarner/biscuit"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.4.0"]
-                 [org.clojure/math.numeric-tower "0.0.1"]])
+  :dependencies [[org.clojure/clojure "1.4.0"]])
