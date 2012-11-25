@@ -1,12 +1,21 @@
 # Biscuit
 
-A Clojure library for calculating message digest(-ive)s.
+A Clojure library for calculating message digest(ive)s. The digest algorithms implemented in biscuit are all variations of [CRCs](http://en.wikipedia.org/wiki/Cyclic_redundancy_check) and are designed to verify the integrity of messages sent over noisy channels.
+
+## Installation
+
+Add the following dependency to you `prpject.clj` file:
+
+```clojure
+[biscuit "1.0.0"]
+```
 
 ## Usage
 
 ```clojure
 (require '[biscuit.core :as digest])
-(digest/crc8 "Message")
+(digest/crc8 "hobnob")
+; 17
 ```
 
 The following algorithms are supported:
