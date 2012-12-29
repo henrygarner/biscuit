@@ -17,11 +17,10 @@
   "Digests the message bytes into a checksum"
   [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
   (let [bytes (.getBytes message)]
-    (bit-xor
-     (reduce
-      (partial digest-byte lookup-table lookup-shift xor-shift and-mask)
-      checksum bytes)
-     xor-mask)))
+    (-> digest-byte
+        (partial lookup-table lookup-shift xor-shift and-mask)
+        (reduce checksum bytes)
+        (bit-xor xor-mask))))
 
 (defn crc1
   "Calculates the CRC1 checksum"
