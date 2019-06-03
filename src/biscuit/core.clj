@@ -78,209 +78,211 @@
   (crc64 [message] [message charset]
     "Calculates the CRC64 checksum"))
 
-(extend-protocol ICrc
-  (Class/forName "[B")
-  (crc1 [message]
-    (-> (reduce + message)
-        (mod 256)))
-  (crc5 [message]
-    (digest-message lookup/crc5
-                    #(bit-shift-right % 3)
-                    #(bit-shift-right % 8)
-                    (bit-shift-left 0x1f 3)
-                    0x1f
-                    0x1f
-                    message))
-  (crc8-1wire [message]
-    (digest-message lookup/crc8-1wire
-                    identity
-                    #(bit-shift-left % 8)
-                    0xff
-                    0x00
-                    0x00
-                    message))
-  (crc8 [message]
-    (digest-message lookup/crc8
-                    identity
-                    #(bit-shift-left % 8)
-                    0xff
-                    0x00
-                    0x00
-                    message))
-  (crc16 [message]
-    (digest-message lookup/crc16
-                    identity
-                    #(bit-shift-right % 8)
-                    0x00ffff
-                    0x00
-                    0x00
-                    message))
-  (crc16-usb [message]
-    (digest-message lookup/crc16
-                    identity
-                    #(bit-shift-right % 8)
-                    0x00ffff
-                    0xffff
-                    0xffff
-                    message))
-  (crc16-ccitt [message]
-    (digest-message lookup/crc16-ccitt
-                    #(bit-shift-right % 8)
-                    #(bit-shift-left % 8)
-                    0x00ffff
-                    0x00
-                    0xffff
-                    message))
-  (crc16-dnp [message]
-    (digest-message lookup/crc16-dnp
-                    identity
-                    #(bit-shift-right % 8)
-                    0x00ffff
-                    0x00
-                    0x00
-                    message))
-  (crc16-modbus [message]
-    (digest-message lookup/crc16-modbus
-                    identity
-                    #(bit-shift-right % 8)
-                    0xffff
-                    0x00
-                    0xffff
-                    message))
-  (crc16-xmodem [message]
-    (digest-message lookup/crc16-xmodem
-                    #(bit-shift-right % 8)
-                    #(bit-shift-left % 8)
-                    0xffff
-                    0x00
-                    0x00
-                    message))
-  (crc16-zmodem [message]
-    (digest-message lookup/crc16-zmodem
-                    #(bit-shift-right % 8)
-                    #(bit-shift-left % 8)
-                    0xffff
-                    0x00
-                    0x00
-                    message))
-  (crc24 [message]
-    (digest-message lookup/crc24
-                    #(bit-shift-right % 16)
-                    #(bit-shift-left % 8)
-                    0xffffff
-                    0x00
-                    0xb704ce
-                    message))
-  (crc32 [message]
-    (digest-message lookup/crc32
-                    identity
-                    #(bit-shift-right % 8)
-                    0x00ffffff
-                    0xffffffff
-                    0xffffffff
-                    message))
-  (crc32c [message]
-    (digest-message lookup/crc32c
-                    identity
-                    #(bit-shift-right % 8)
-                    0x00ffffff
-                    0xffffffff
-                    0xffffffff
-                    message))
-  (crc32-mpeg [message]
-    (digest-message lookup/crc32-mpeg
-                    #(bit-shift-right % 24)
-                    #(bit-shift-left % 8)
-                    0xffffffff
-                    0x00
-                    0xffffffff
-                    message))
-  (crc64 [message]
-    (digest-message-biginteger lookup/crc64
-                               identity
-                               #(.shiftRight % 8)
-                               (.toBigInteger 0xffffffffffffffffN)
-                               (.toBigInteger 0x00N)
-                               (.toBigInteger 0x00N)
-                               message))
-  String
-  (crc1
-    ([message]
-     (crc1 message "UTF-8"))
-    ([message charset]
-     (crc1 (.getBytes message charset))))
-  (crc5
-    ([message]
-     (crc5 message "UTF-8"))
-    ([message charset]
-     (crc5 (.getBytes message charset))))
-  (crc8-1wire
-    ([message]
-     (crc8-1wire message "UTF-8"))
-    ([message charset]
-     (crc8-1wire (.getBytes message charset))))
-  (crc8
-    ([message]
-     (crc8 message "UTF-8"))
-    ([message charset]
-     (crc8 (.getBytes message charset))))
-  (crc16
-    ([message]
-     (crc16 message "UTF-8"))
-    ([message charset]
-     (crc16 (.getBytes message charset))))
-  (crc16-usb
-    ([message]
-     (crc16-usb message "UTF-8"))
-    ([message charset]
-     (crc16-usb (.getBytes message charset))))
-  (crc16-ccitt
-    ([message]
-     (crc16-ccitt message "UTF-8"))
-    ([message charset]
-     (crc16-ccitt (.getBytes message charset))))
-  (crc16-dnp
-    ([message]
-     (crc16-dnp message "UTF-8"))
-    ([message charset]
-     (crc16-dnp (.getBytes message charset))))
-  (crc16-modbus
-    ([message]
-     (crc16-modbus message "UTF-8"))
-    ([message charset]
-     (crc16-modbus (.getBytes message charset))))
-  (crc16-xmodem
-    ([message]
-     (crc16-xmodem message "UTF-8"))
-    ([message charset]
-     (crc16-xmodem (.getBytes message charset))))
-  (crc16-zmodem
-    ([message]
-     (crc16-zmodem message "UTF-8"))
-    ([message charset]
-     (crc16-zmodem (.getBytes message charset))))
-  (crc24
-    ([message]
-     (crc24 message "UTF-8"))
-    ([message charset]
-     (crc24 (.getBytes message charset))))
-  (crc32
-    ([message]
-     (crc32 message "UTF-8"))
-    ([message charset]
-     (crc32 (.getBytes message charset))))
-  (crc32c
-    ([message]
-     (crc32c message "UTF-8"))
-    ([message charset]
-     (crc32c (.getBytes message charset))))
-  (crc32-mpeg
-    ([message]
-     (crc32-mpeg message "UTF-8"))
-    ([message charset]
-     (crc32-mpeg (.getBytes message charset))))
-  (crc64
-    ([message]
-     (crc64 message "UTF-8"))
-    ([message charset]
-     (crc64 (.getBytes message charset)))))
+(extend (Class/forName "[B")
+  ICrc
+  {:crc1 (fn [message]
+           (-> (reduce + message)
+               (mod 256)))
+   :crc5 (fn [message]
+           (digest-message lookup/crc5
+                           #(bit-shift-right % 3)
+                           #(bit-shift-right % 8)
+                           (bit-shift-left 0x1f 3)
+                           0x1f
+                           0x1f
+                           message))
+   :crc8-1wire (fn [message]
+                 (digest-message lookup/crc8-1wire
+                                 identity
+                                 #(bit-shift-left % 8)
+                                 0xff
+                                 0x00
+                                 0x00
+                                 message))
+   :crc8 (fn [message]
+           (digest-message lookup/crc8
+                           identity
+                           #(bit-shift-left % 8)
+                           0xff
+                           0x00
+                           0x00
+                           message))
+   :crc16 (fn [message]
+            (digest-message lookup/crc16
+                            identity
+                            #(bit-shift-right % 8)
+                            0x00ffff
+                            0x00
+                            0x00
+                            message))
+   :crc16-usb (fn [message]
+                (digest-message lookup/crc16
+                                identity
+                                #(bit-shift-right % 8)
+                                0x00ffff
+                                0xffff
+                                0xffff
+                                message))
+   :crc16-ccitt (fn [message]
+                  (digest-message lookup/crc16-ccitt
+                                  #(bit-shift-right % 8)
+                                  #(bit-shift-left % 8)
+                                  0x00ffff
+                                  0x00
+                                  0xffff
+                                  message))
+   :crc16-dnp (fn [message]
+                (digest-message lookup/crc16-dnp
+                                identity
+                                #(bit-shift-right % 8)
+                                0x00ffff
+                                0x00
+                                0x00
+                                message))
+   :crc16-modbus (fn [message]
+                   (digest-message lookup/crc16-modbus
+                                   identity
+                                   #(bit-shift-right % 8)
+                                   0xffff
+                                   0x00
+                                   0xffff
+                                   message))
+   :crc16-xmodem (fn [message]
+                   (digest-message lookup/crc16-xmodem
+                                   #(bit-shift-right % 8)
+                                   #(bit-shift-left % 8)
+                                   0xffff
+                                   0x00
+                                   0x00
+                                   message))
+   :crc16-zmodem (fn [message]
+                   (digest-message lookup/crc16-zmodem
+                                   #(bit-shift-right % 8)
+                                   #(bit-shift-left % 8)
+                                   0xffff
+                                   0x00
+                                   0x00
+                                   message))
+   :crc24 (fn [message]
+            (digest-message lookup/crc24
+                            #(bit-shift-right % 16)
+                            #(bit-shift-left % 8)
+                            0xffffff
+                            0x00
+                            0xb704ce
+                            message))
+   :crc32 (fn [message]
+            (digest-message lookup/crc32
+                            identity
+                            #(bit-shift-right % 8)
+                            0x00ffffff
+                            0xffffffff
+                            0xffffffff
+                            message))
+   :crc32c (fn [message]
+             (digest-message lookup/crc32c
+                             identity
+                             #(bit-shift-right % 8)
+                             0x00ffffff
+                             0xffffffff
+                             0xffffffff
+                             message))
+   :crc32-mpeg (fn [message]
+                 (digest-message lookup/crc32-mpeg
+                                 #(bit-shift-right % 24)
+                                 #(bit-shift-left % 8)
+                                 0xffffffff
+                                 0x00
+                                 0xffffffff
+                                 message))
+   :crc64 (fn [message]
+            (digest-message-biginteger lookup/crc64
+                                       identity
+                                       #(.shiftRight % 8)
+                                       (.toBigInteger 0xffffffffffffffffN)
+                                       (.toBigInteger 0x00N)
+                                       (.toBigInteger 0x00N)
+                                       message))})
+
+(extend String
+  ICrc
+  {:crc1 (fn
+           ([message]
+            (crc1 message "UTF-8"))
+           ([message charset]
+            (crc1 (.getBytes message charset))))
+   :crc5 (fn
+           ([message]
+            (crc5 message "UTF-8"))
+           ([message charset]
+            (crc5 (.getBytes message charset))))
+   :crc8-1wire (fn
+                 ([message]
+                  (crc8-1wire message "UTF-8"))
+                 ([message charset]
+                  (crc8-1wire (.getBytes message charset))))
+   :crc8 (fn
+           ([message]
+            (crc8 message "UTF-8"))
+           ([message charset]
+            (crc8 (.getBytes message charset))))
+   :crc16 (fn
+            ([message]
+             (crc16 message "UTF-8"))
+            ([message charset]
+             (crc16 (.getBytes message charset))))
+   :crc16-usb (fn
+                ([message]
+                 (crc16-usb message "UTF-8"))
+                ([message charset]
+                 (crc16-usb (.getBytes message charset))))
+   :crc16-ccitt (fn
+                  ([message]
+                   (crc16-ccitt message "UTF-8"))
+                  ([message charset]
+                   (crc16-ccitt (.getBytes message charset))))
+   :crc16-dnp (fn
+                ([message]
+                 (crc16-dnp message "UTF-8"))
+                ([message charset]
+                 (crc16-dnp (.getBytes message charset))))
+   :crc16-modbus (fn
+                   ([message]
+                    (crc16-modbus message "UTF-8"))
+                   ([message charset]
+                    (crc16-modbus (.getBytes message charset))))
+   :crc16-xmodem (fn
+                   ([message]
+                    (crc16-xmodem message "UTF-8"))
+                   ([message charset]
+                    (crc16-xmodem (.getBytes message charset))))
+   :crc16-zmodem (fn
+                   ([message]
+                    (crc16-zmodem message "UTF-8"))
+                   ([message charset]
+                    (crc16-zmodem (.getBytes message charset))))
+   :crc24 (fn
+            ([message]
+             (crc24 message "UTF-8"))
+            ([message charset]
+             (crc24 (.getBytes message charset))))
+   :crc32 (fn
+            ([message]
+             (crc32 message "UTF-8"))
+            ([message charset]
+             (crc32 (.getBytes message charset))))
+   :crc32c (fn
+             ([message]
+              (crc32c message "UTF-8"))
+             ([message charset]
+              (crc32c (.getBytes message charset))))
+   :crc32-mpeg (fn
+                 ([message]
+                  (crc32-mpeg message "UTF-8"))
+                 ([message charset]
+                  (crc32-mpeg (.getBytes message charset))))
+   :crc64 (fn
+            ([message]
+             (crc64 message "UTF-8"))
+            ([message charset]
+             (crc64 (.getBytes message charset))))})
