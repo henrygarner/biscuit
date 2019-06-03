@@ -43,5 +43,6 @@ This library is strongly influenced by the [digest-crc](https://github.com/postm
 ## License
 
 Copyright © 2012 Henry Garner
+Copyright © 2019 Magnet S. Coop.
 
 Distributed under the Eclipse Public License, the same as Clojure.

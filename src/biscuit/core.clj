@@ -16,181 +16,235 @@
 (defn- digest-message
   "Digests the message bytes into a checksum"
   [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
-  (let [bytes (.getBytes message)]
-    (-> digest-byte
-        (partial lookup-table lookup-shift xor-shift and-mask)
-        (reduce checksum bytes)
-        (bit-xor xor-mask))))
+  (-> digest-byte
+      (partial lookup-table lookup-shift xor-shift and-mask)
+      (reduce checksum message)
+      (bit-xor xor-mask)))
 
-(defn crc1
-  "Calculates the CRC1 checksum"
-  [message]
-  (-> (reduce + (.getBytes message))
-      (mod 256)))
 
-(defn crc5
-  "Calculates the CRC5 checksum"
-  [message]
-  (digest-message lookup/crc5
-                  #(bit-shift-right % 3)
-                  #(bit-shift-right % 8)
-                  (bit-shift-left 0x1f 3)
-                  0x1f
-                  0x1f
-                  message))
+(defprotocol ICrc
+  (crc1 [message] [message charset]
+    "Calculates the CRC1 checksum")
+  (crc5 [message] [message charset]
+    "Calculates the CRC5 checksum")
+  (crc8-1wire [message] [message charset]
+    "Calculates the Dallas 1-wire CRC8 checksum")
+  (crc8 [message] [message charset]
+    "Calculates the CRC8 checksum")
+  (crc16 [message] [message charset]
+    "Calculates the CRC16 checksum")
+  (crc16-usb [message] [message charset]
+    "Calculates the CRC16 USB checksum")
+  (crc16-ccitt [message] [message charset]
+    "Calculates the CRC16 CCITT checksum")
+  (crc16-dnp [message] [message charset]
+    "Calculates the CRC16 DNP checksum")
+  (crc16-modbus [message] [message charset]
+    "Calculates the CRC16 Modbus checksum")
+  (crc16-xmodem [message] [message charset]
+    "Calculates the CRC16 XModem checksum")
+  (crc16-zmodem [message] [message charset]
+    "Calculates the CRC16 ZModem checksum")
+  (crc24 [message] [message charset]
+    "Calculates the CRC24 checksum")
+  (crc32 [message] [message charset]
+    "Calculates the CRC32 checksum")
+  (crc32c [message] [message charset]
+    "Calculates the CRC32c checksum")
+  (crc32-mpeg [message] [message charset]
+    "Calculates the CRC32MPEG checksum"))
 
-(defn crc8-1wire
-  "Calculates the Dallas 1-wire CRC8 checksum"
-  [message]
-  (digest-message lookup/crc8-1wire
-                  identity
-                  #(bit-shift-left % 8)
-                  0xff
-                  0x00
-                  0x00
-                  message))
+(extend-protocol ICrc
+  (Class/forName "[B")
+  (crc1 [message]
+    (-> (reduce + message)
+        (mod 256)))
+  (crc5 [message]
+    (digest-message lookup/crc5
+                    #(bit-shift-right % 3)
+                    #(bit-shift-right % 8)
+                    (bit-shift-left 0x1f 3)
+                    0x1f
+                    0x1f
+                    message))
+  (crc8-1wire [message]
+    (digest-message lookup/crc8-1wire
+                    identity
+                    #(bit-shift-left % 8)
+                    0xff
+                    0x00
+                    0x00
+                    message))
+  (crc8 [message]
+    (digest-message lookup/crc8
+                    identity
+                    #(bit-shift-left % 8)
+                    0xff
+                    0x00
+                    0x00
+                    message))
+  (crc16 [message]
+    (digest-message lookup/crc16
+                    identity
+                    #(bit-shift-right % 8)
+                    0x00ffff
+                    0x00
+                    0x00
+                    message))
+  (crc16-usb [message]
+    (digest-message lookup/crc16
+                    identity
+                    #(bit-shift-right % 8)
+                    0x00ffff
+                    0xffff
+                    0xffff
+                    message))
+  (crc16-ccitt [message]
+    (digest-message lookup/crc16-ccitt
+                    #(bit-shift-right % 8)
+                    #(bit-shift-left % 8)
+                    0x00ffff
+                    0x00
+                    0xffff
+                    message))
+  (crc16-dnp [message]
+    (digest-message lookup/crc16-dnp
+                    identity
+                    #(bit-shift-right % 8)
+                    0x00ffff
+                    0x00
+                    0x00
+                    message))
+  (crc16-modbus [message]
+    (digest-message lookup/crc16-modbus
+                    identity
+                    #(bit-shift-right % 8)
+                    0xffff
+                    0x00
+                    0xffff
+                    message))
+  (crc16-xmodem [message]
+    (digest-message lookup/crc16-xmodem
+                    #(bit-shift-right % 8)
+                    #(bit-shift-left % 8)
+                    0xffff
+                    0x00
+                    0x00
+                    message))
+  (crc16-zmodem [message]
+    (digest-message lookup/crc16-zmodem
+                    #(bit-shift-right % 8)
+                    #(bit-shift-left % 8)
+                    0xffff
+                    0x00
+                    0x00
+                    message))
+  (crc24 [message]
+    (digest-message lookup/crc24
+                    #(bit-shift-right % 16)
+                    #(bit-shift-left % 8)
+                    0xffffff
+                    0x00
+                    0xb704ce
+                    message))
+  (crc32 [message]
+    (digest-message lookup/crc32
+                    identity
+                    #(bit-shift-right % 8)
+                    0x00ffffff
+                    0xffffffff
+                    0xffffffff
+                    message))
+  (crc32c [message]
+    (digest-message lookup/crc32c
+                    identity
+                    #(bit-shift-right % 8)
+                    0x00ffffff
+                    0xffffffff
+                    0xffffffff
+                    message))
+  (crc32-mpeg [message]
+    (digest-message lookup/crc32-mpeg
+                    #(bit-shift-right % 24)
+                    #(bit-shift-left % 8)
+                    0xffffffff
+                    0x00
+                    0xffffffff
+                    message))
 
-(defn crc8
-  "Calculates the CRC8 checksum"
-  [message]
-  (digest-message lookup/crc8
-                  identity
-                  #(bit-shift-left % 8)
-                  0xff
-                  0x00
-                  0x00
-                  message))
-
-(defn crc16
-  "Calculates the CRC16 checksum"
-  [message]
-  (digest-message lookup/crc16
-                  identity
-                  #(bit-shift-right % 8)
-                  0x00ffff
-                  0x00
-                  0x00
-                  message))
-
-(defn crc16-usb
-  "Calculates the CRC16 USB checksum"
-  [message]
-  (digest-message lookup/crc16
-                  identity
-                  #(bit-shift-right % 8)
-                  0x00ffff
-                  0xffff
-                  0xffff
-                  message))
-
-(defn crc16-ccitt
-  "Calculates the CRC16 CCITT checksum"
-  [message]
-  (digest-message lookup/crc16-ccitt
-                  #(bit-shift-right % 8)
-                  #(bit-shift-left % 8)
-                  0x00ffff
-                  0x00
-                  0xffff
-                  message))
-
-(defn crc16-dnp
-  "Calculates the CRC16 DNP checksum"
-  [message]
-  (digest-message lookup/crc16-dnp
-                  identity
-                  #(bit-shift-right % 8)
-                  0x00ffff
-                  0x00
-                  0x00
-                  message))
-
-(defn crc16-modbus
-  "Calculates the CRC16 Modbus checksum"
-  [message]
-  (digest-message lookup/crc16-modbus
-                  identity
-                  #(bit-shift-right % 8)
-                  0xffff
-                  0x00
-                  0xffff
-                  message))
-
-(defn crc16-xmodem
-  "Calculates the CRC16 XModem checksum"
-  [message]
-  (digest-message lookup/crc16-xmodem
-                  #(bit-shift-right % 8)
-                  #(bit-shift-left % 8)
-                  0xffff
-                  0x00
-                  0x00
-                  message))
-
-(defn crc16-zmodem
-  "Calculates the CRC16 ZModem checksum"
-  [message]
-  (digest-message lookup/crc16-zmodem
-                  #(bit-shift-right % 8)
-                  #(bit-shift-left % 8)
-                  0xffff
-                  0x00
-                  0x00
-                  message))
-
-(defn crc24
-  "Calculates the CRC24 checksum"
-  [message]
-  (digest-message lookup/crc24
-                  #(bit-shift-right % 16)
-                  #(bit-shift-left % 8)
-                  0xffffff
-                  0x00
-                  0xb704ce
-                  message))
-
-(defn crc32
-  "Calculates the CRC32 checksum"
-  [message]
-  (digest-message lookup/crc32
-                  identity
-                  #(bit-shift-right % 8)
-                  0x00ffffff
-                  0xffffffff
-                  0xffffffff
-                  message))
-
-(defn crc32c
-  "Calculates the CRC32c checksum"
-  [message]
-  (digest-message lookup/crc32c
-                  identity
-                  #(bit-shift-right % 8)
-                  0x00ffffff
-                  0xffffffff
-                  0xffffffff
-                  message))
-
-(defn crc32-mpeg
-  "Calculates the CRC32MPEG checksum"
-  [message]
-  (digest-message lookup/crc32-mpeg
-                  #(bit-shift-right % 24)
-                  #(bit-shift-left % 8)
-                  0xffffffff
-                  0x00
-                  0xffffffff
-                  message))
-
-(comment
-  "Bitwise and does not support clojure.lang.BigInt"
-  (defn crc64
-   "Calculates the CRC64 checksum"
-   [message]
-   (digest-message lookup/crc64
-                   identity
-                   #(bit-shift-right % 8)
-                   0xffffffffffffffff
-                   0x00
-                   0x00
-                   message)))
+  String
+  (crc1
+    ([message]
+     (crc1 message "UTF-8"))
+    ([message charset]
+     (crc1 (.getBytes message charset))))
+  (crc5
+    ([message]
+     (crc5 message "UTF-8"))
+    ([message charset]
+     (crc5 (.getBytes message charset))))
+  (crc8-1wire
+    ([message]
+     (crc8-1wire message "UTF-8"))
+    ([message charset]
+     (crc8-1wire (.getBytes message charset))))
+  (crc8
+    ([message]
+     (crc8 message "UTF-8"))
+    ([message charset]
+     (crc8 (.getBytes message charset))))
+  (crc16
+    ([message]
+     (crc16 message "UTF-8"))
+    ([message charset]
+     (crc16 (.getBytes message charset))))
+  (crc16-usb
+    ([message]
+     (crc16-usb message "UTF-8"))
+    ([message charset]
+     (crc16-usb (.getBytes message charset))))
+  (crc16-ccitt
+    ([message]
+     (crc16-ccitt message "UTF-8"))
+    ([message charset]
+     (crc16-ccitt (.getBytes message charset))))
+  (crc16-dnp
+    ([message]
+     (crc16-dnp message "UTF-8"))
+    ([message charset]
+     (crc16-dnp (.getBytes message charset))))
+  (crc16-modbus
+    ([message]
+     (crc16-modbus message "UTF-8"))
+    ([message charset]
+     (crc16-modbus (.getBytes message charset))))
+  (crc16-xmodem
+    ([message]
+     (crc16-xmodem message "UTF-8"))
+    ([message charset]
+     (crc16-xmodem (.getBytes message charset))))
+  (crc16-zmodem
+    ([message]
+     (crc16-zmodem message "UTF-8"))
+    ([message charset]
+     (crc16-zmodem (.getBytes message charset))))
+  (crc24
+    ([message]
+     (crc24 message "UTF-8"))
+    ([message charset]
+     (crc24 (.getBytes message charset))))
+  (crc32
+    ([message]
+     (crc32 message "UTF-8"))
+    ([message charset]
+     (crc32 (.getBytes message charset))))
+  (crc32c
+    ([message]
+     (crc32c message "UTF-8"))
+    ([message charset]
+     (crc32c (.getBytes message charset))))
+  (crc32-mpeg
+    ([message]
+     (crc32-mpeg message "UTF-8"))
+    ([message charset]
+     (crc32-mpeg (.getBytes message charset)))))
