@@ -198,3 +198,15 @@
   (is (= (biscuit/crc32-mpeg aeiou-iso-8859-1) 810276022))
   (is (= (biscuit/crc32-mpeg aeiou-utf-8) 2753494197))
   (is (= (biscuit/crc32-mpeg aeiou-utf-16le) 4163228820)))
+
+(deftest crc64-checksum
+  (is (= (biscuit/crc64 biscuit-str) 5158440339845310816))
+  (is (= (biscuit/crc64 biscuit-iso-8859-1) 5158440339845310816))
+  (is (= (biscuit/crc64 biscuit-utf-8) 5158440339845310816))
+  (is (= (biscuit/crc64 biscuit-utf-16le) 12621829595197151832))
+  (is (= (biscuit/crc64 aeiou-str "ISO-8859-1") 10915415423066308608))
+  (is (= (biscuit/crc64 aeiou-str "UTF-8") 16123775510345298566))
+  (is (= (biscuit/crc64 aeiou-str "UTF-16LE") 3264482577922715790))
+  (is (= (biscuit/crc64 aeiou-iso-8859-1) 10915415423066308608))
+  (is (= (biscuit/crc64 aeiou-utf-8) 16123775510345298566))
+  (is (= (biscuit/crc64 aeiou-utf-16le) 3264482577922715790)))

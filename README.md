@@ -35,6 +35,9 @@ The following algorithms are supported:
 * CRC32
 * CRC32c
 * CRC32 MPEG
+* CRC64
+
+**Performance notice:** CRC64 implementation uses `BigInteger`s, as native Clojure `Long`s and `BigInt`s are not big enough to hold the required values. This means the CRC64 implementation is *extremely* slow compared to the rest of the CRCs implemented by the library.
 
 ## Credit
 

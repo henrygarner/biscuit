@@ -13,6 +13,20 @@
                    xor-shift
                    (bit-and and-mask)))))
 
+(defn- digest-byte-biginteger
+  "Returns an updated checksum given a previous checksum and a byte.
+  Uses BigInteger arithmetic for checksum calculations"
+  [lookup-table lookup-shift xor-shift and-mask checksum byte]
+  (-> checksum
+      lookup-shift
+      (.xor (.toBigInteger (bigint byte)))
+      (.and (.toBigInteger 0xffN))
+      lookup-table
+      (-> bigint .toBigInteger)
+      (.xor (-> checksum
+                xor-shift
+                (.and and-mask)))))
+
 (defn- digest-message
   "Digests the message bytes into a checksum"
   [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
@@ -21,6 +35,14 @@
       (reduce checksum message)
       (bit-xor xor-mask)))
 
+(defn- digest-message-biginteger
+  "Digests the message bytes into a checksum.
+  Uses BigInteger arithmetic for checksum calculations"
+  [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
+  (-> digest-byte-biginteger
+      (partial lookup-table lookup-shift xor-shift and-mask)
+      (reduce checksum message)
+      (.xor xor-mask)))
 
 (defprotocol ICrc
   (crc1 [message] [message charset]
@@ -52,7 +74,9 @@
   (crc32c [message] [message charset]
     "Calculates the CRC32c checksum")
   (crc32-mpeg [message] [message charset]
-    "Calculates the CRC32MPEG checksum"))
+    "Calculates the CRC32MPEG checksum")
+  (crc64 [message] [message charset]
+    "Calculates the CRC64 checksum"))
 
 (extend-protocol ICrc
   (Class/forName "[B")
@@ -171,7 +195,14 @@
                     0x00
                     0xffffffff
                     message))
-
+  (crc64 [message]
+    (digest-message-biginteger lookup/crc64
+                               identity
+                               #(.shiftRight % 8)
+                               (.toBigInteger 0xffffffffffffffffN)
+                               (.toBigInteger 0x00N)
+                               (.toBigInteger 0x00N)
+                               message))
   String
   (crc1
     ([message]
@@ -247,4 +278,9 @@
     ([message]
      (crc32-mpeg message "UTF-8"))
     ([message charset]
-     (crc32-mpeg (.getBytes message charset)))))
+     (crc32-mpeg (.getBytes message charset))))
+  (crc64
+    ([message]
+     (crc64 message "UTF-8"))
+    ([message charset]
+     (crc64 (.getBytes message charset)))))
