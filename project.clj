@@ -1,4 +1,4 @@
-(defproject biscuit "1.1.0-SNAPSHOT"
+(defproject biscuit "1.1.0"
   :description "Calculate message digests"
   :url "https://github.com/henrygarner/biscuit"
   :license {:name "Eclipse Public License"

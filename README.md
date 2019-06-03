@@ -7,7 +7,7 @@ A Clojure library for calculating message digest(ive)s. The digest algorithms im
 Add the following dependency to your `project.clj` file:
 
 ```clojure
-[biscuit "1.0.0"]
+[biscuit "1.1.0"]
 ```
 
 ## Usage
