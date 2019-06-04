@@ -7,7 +7,7 @@ A Clojure library for calculating message digest(ive)s. The digest algorithms im
 Add the following dependency to your `project.clj` file:
 
 ```clojure
-[biscuit "1.0.0"]
+[biscuit "1.1.0"]
 ```
 
 ## Usage
@@ -35,6 +35,9 @@ The following algorithms are supported:
 * CRC32
 * CRC32c
 * CRC32 MPEG
+* CRC64
+
+**Performance notice:** CRC64 implementation uses `BigInteger`s, as native Clojure `Long`s and `BigInt`s are not big enough to hold the required values. This means the CRC64 implementation is *extremely* slow compared to the rest of the CRCs implemented by the library.
 
 ## Credit
 
@@ -43,5 +46,6 @@ This library is strongly influenced by the [digest-crc](https://github.com/postm
 ## License
 
 Copyright © 2012 Henry Garner
+Copyright © 2019 Magnet S. Coop.
 
 Distributed under the Eclipse Public License, the same as Clojure.
