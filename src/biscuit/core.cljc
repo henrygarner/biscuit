@@ -1,5 +1,16 @@
 (ns biscuit.core
-  (:require [biscuit.tables :as lookup]))
+  (:require [biscuit.tables :as lookup]
+            #?(:cljs [goog.crypt :as c])))
+
+#?(:cljs
+   (defn get-bytes
+     [input]
+     (c/stringToUtf8ByteArray input)))
+
+#?(:clj
+   (defn get-bytes
+     [input]
+     (.getBytes input "UTF-8")))
 
 (defn- digest-byte
   "Returns an updated checksum given a previous checksum and a byte"
@@ -16,7 +27,7 @@
 (defn- digest-message
   "Digests the message bytes into a checksum"
   [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
-  (let [bytes (if (string? message) (.getBytes message) message)]
+  (let [bytes (if (string? message) (get-bytes message) message)]
     (-> digest-byte
         (partial lookup-table lookup-shift xor-shift and-mask)
         (reduce checksum bytes)
@@ -25,7 +36,7 @@
 (defn crc1
   "Calculates the CRC1 checksum"
   [message]
-  (let [bytes (if (string? message) (.getBytes message) message)]
+  (let [bytes (if (string? message) (get-bytes message) message)]
     (-> (reduce + bytes)
         (mod 256))))
 
@@ -186,12 +197,12 @@
 (comment
   "Bitwise and does not support clojure.lang.BigInt"
   (defn crc64
-   "Calculates the CRC64 checksum"
-   [message]
-   (digest-message lookup/crc64
-                   identity
-                   #(bit-shift-right % 8)
-                   0xffffffffffffffff
-                   0x00
-                   0x00
-                   message)))
+    "Calculates the CRC64 checksum"
+    [message]
+    (digest-message lookup/crc64
+                    identity
+                    #(bit-shift-right % 8)
+                    0xffffffffffffffff
+                    0x00
+                    0x00
+                    message)))

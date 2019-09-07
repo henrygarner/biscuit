@@ -23,9 +23,9 @@
     (is (= (b/crc64 "biscuit") 5158440339845310816))))
 
 (deftest checksum-byte-array-from-str
-  (is (= (b/crc8 (.getBytes "biscuit")) 133))
-  (is (= (b/crc16 (.getBytes "biscuit")) 56686))
-  (is (= (b/crc32 (.getBytes "biscuit")) 2285031842)))
+  (is (= (b/crc8 (b/get-bytes "biscuit")) 133))
+  (is (= (b/crc16 (b/get-bytes "biscuit")) 56686))
+  (is (= (b/crc32 (b/get-bytes "biscuit")) 2285031842)))
 
 (deftest checksum-byte-coll
   (is (= (b/crc8 [0 1 2]) 27))

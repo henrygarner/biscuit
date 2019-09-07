@@ -1,0 +1,2 @@
+{:main biscuit.core
+ :target :nodejs}
