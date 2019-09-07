@@ -16,7 +16,7 @@
 (defn- digest-message
   "Digests the message bytes into a checksum"
   [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
-  (let [bytes (.getBytes message)]
+  (let [bytes (if (string? message) (.getBytes message) message)]
     (-> digest-byte
         (partial lookup-table lookup-shift xor-shift and-mask)
         (reduce checksum bytes)
@@ -25,8 +25,9 @@
 (defn crc1
   "Calculates the CRC1 checksum"
   [message]
-  (-> (reduce + (.getBytes message))
-      (mod 256)))
+  (let [bytes (if (string? message) (.getBytes message) message)]
+    (-> (reduce + bytes)
+        (mod 256))))
 
 (defn crc5
   "Calculates the CRC5 checksum"
