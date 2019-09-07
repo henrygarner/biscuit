@@ -2,16 +2,6 @@
   (:require [biscuit.tables :as lookup]
             #?(:cljs [goog.crypt :as c])))
 
-#?(:cljs
-   (defn get-bytes
-     [input]
-     (c/stringToUtf8ByteArray input)))
-
-#?(:clj
-   (defn get-bytes
-     [input]
-     (.getBytes input "UTF-8")))
-
 (defn- digest-byte
   "Returns an updated checksum given a previous checksum and a byte"
   [lookup-table lookup-shift xor-shift and-mask checksum byte]
@@ -24,10 +14,27 @@
                    xor-shift
                    (bit-and and-mask)))))
 
+#?(:clj
+   (defn seqable-bytes
+     "Return seqable bytes"
+     [message]
+     (if (string? message)
+       (.getBytes message "UTF-8")
+       message)))
+
+#?(:cljs
+   (defn seqable-bytes
+     "Return seqable bytes"
+     [message]
+     (cond
+       (string? message) (c/stringToUtf8ByteArray message)
+       (= (type message) js/Int8Array) (array-seq message)
+       :else message)))
+
 (defn- digest-message
   "Digests the message bytes into a checksum"
   [lookup-table lookup-shift xor-shift and-mask xor-mask checksum message]
-  (let [bytes (if (string? message) (get-bytes message) message)]
+  (let [bytes (seqable-bytes message)]
     (-> digest-byte
         (partial lookup-table lookup-shift xor-shift and-mask)
         (reduce checksum bytes)
@@ -36,7 +43,7 @@
 (defn crc1
   "Calculates the CRC1 checksum"
   [message]
-  (let [bytes (if (string? message) (get-bytes message) message)]
+  (let [bytes (seqable-bytes message)]
     (-> (reduce + bytes)
         (mod 256))))
 

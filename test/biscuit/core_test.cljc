@@ -22,12 +22,13 @@
     "Bitwise and does not support clojure.lang.BigInt"
     (is (= (b/crc64 "biscuit") 5158440339845310816))))
 
-(deftest checksum-byte-array-from-str
-  (is (= (b/crc8 (b/get-bytes "biscuit")) 133))
-  (is (= (b/crc16 (b/get-bytes "biscuit")) 56686))
-  (is (= (b/crc32 (b/get-bytes "biscuit")) 2285031842)))
+(deftest checksum-array-from-str
+  (is (= (b/crc8 (b/seqable-bytes "biscuit")) 133))
+  (is (= (b/crc16 (b/seqable-bytes "biscuit")) 56686))
+  (is (= (b/crc32 (b/seqable-bytes "biscuit")) 2285031842)))
 
-(deftest checksum-byte-coll
-  (is (= (b/crc8 [0 1 2]) 27))
-  (is (= (b/crc16 [0 1 2]) 20864))
-  (is (= (b/crc32 [0 1 2]) 139757951)))
+#?(:cljs
+(deftest checksum-js-typed-array
+  (is (= (b/crc8 (js/Int8Array. (clj->js [0 1 2]))) 27))
+  (is (= (b/crc16 (js/Int8Array. (clj->js [0 1 2]))) 20864))
+  (is (= (b/crc32 (js/Int8Array. (clj->js [0 1 2]))) 139757951))))
